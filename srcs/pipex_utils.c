@@ -6,7 +6,7 @@
 /*   By: mdelforg <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/10 15:58:30 by mdelforg          #+#    #+#             */
-/*   Updated: 2022/03/20 11:16:11 by mdelforg         ###   ########.fr       */
+/*   Updated: 2022/03/21 17:11:04 by mdelforg         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,5 @@ void	ft_path_init(char *cmd, t_data *data)
 	data->path = ft_substr(ft_path_check(path), 0,
 			ft_strlen(ft_path_check(path)));
 	ft_free_path(path);
-	if (!data->path)
-		ft_error(data, "Command not found");
 	return ;
 }

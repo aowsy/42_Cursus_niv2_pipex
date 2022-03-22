@@ -6,7 +6,7 @@
 /*   By: mdelforg <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/11 16:12:05 by mdelforg          #+#    #+#             */
-/*   Updated: 2022/03/20 10:53:13 by mdelforg         ###   ########.fr       */
+/*   Updated: 2022/03/20 15:50:36 by mdelforg         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ void	ft_free_data(t_data *data)
 	free(data->cmd_tab2);
 	close(data->fd1);
 	close(data->fd2);
+	close(data->p_fd[0]);
+	close(data->p_fd[1]);
 	return ;
 }
 

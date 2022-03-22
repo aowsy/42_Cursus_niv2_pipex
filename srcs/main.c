@@ -6,7 +6,7 @@
 /*   By: mdelforg <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/25 15:48:53 by mdelforg          #+#    #+#             */
-/*   Updated: 2022/03/20 11:23:53 by mdelforg         ###   ########.fr       */
+/*   Updated: 2022/03/22 09:19:45 by mdelforg         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	ft_parent_process(t_data *data, char **env)
 	dup2(data->p_fd[0], STDIN_FILENO);
 	close(data->fd2);
 	execve(data->path, data->cmd_tab2, env);
-	ft_error(data, "Command couldn't execute");
+	perror("Command couldn't execute");
 	return ;
 }
 
@@ -32,11 +32,11 @@ void	ft_child_process(t_data *data, char **env)
 	dup2(data->p_fd[1], STDOUT_FILENO);
 	close(data->fd1);
 	execve(data->path, data->cmd_tab1, env);
-	ft_error(data, "Command couldn't execute");
+	perror("Command couldn't execute");
 	return ;
 }
 
-void	ft_pipex(t_data *data, char **env)
+int	ft_pipex(t_data *data, char **env)
 {
 	int	wstatus;
 
@@ -47,19 +47,18 @@ void	ft_pipex(t_data *data, char **env)
 		ft_error(data, "Fork error");
 	if (!data->pid1)
 		ft_child_process(data, env);
-	waitpid(data->pid1, &wstatus, 0);
-	if (WIFEXITED(wstatus))
-		if (WEXITSTATUS(wstatus))
-			ft_error(data, "Error in child process");
-	data->pid2 = fork();
-	if (data->pid2 < 0)
-		ft_error(data, "Fork error");
-	if (!data->pid2)
-		ft_parent_process(data, env);
+	else
+	{
+		data->pid2 = fork();
+		if (data->pid2 < 0)
+			ft_error(data, "Fork error");
+		if (!data->pid2)
+			ft_parent_process(data, env);
+	}
 	close(data->p_fd[0]);
 	close(data->p_fd[1]);
 	waitpid(data->pid2, &wstatus, 0);
-	return ;
+	return (WEXITSTATUS(wstatus));
 }
 
 void	ft_data_init(t_data *data, char **av)
@@ -75,18 +74,20 @@ void	ft_data_init(t_data *data, char **av)
 int	main(int ac, char **av, char **envp)
 {
 	t_data	data;
+	int		exitval;
 
 	if (ac == 5)
 	{
 		ft_data_init(&data, av);
 		data.fd1 = open(av[1], O_RDONLY);
 		data.fd2 = open(av[4], O_CREAT | O_RDWR | O_TRUNC, 0777);
-		if (data.fd1 < 0 || data.fd2 < 0 || access(av[1], F_OK))
+		if (data.fd1 < 0 || data.fd2 < 0)
 			ft_error(&data, "Wrong file descriptor");
-		ft_pipex(&data, envp);
+		exitval = ft_pipex(&data, envp);
 		ft_free_data(&data);
+		return (exitval);
 	}
 	else
 		perror("Invalid argument");
-	return (0);
+	return (1);
 }
