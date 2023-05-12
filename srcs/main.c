@@ -80,8 +80,10 @@ int	main(int ac, char **av, char **envp)
 	{
 		ft_data_init(&data, av);
 		data.fd1 = open(av[1], O_RDONLY);
+		if (data.fd1 < 0)
+			ft_error(&data, "Wrong file descriptor");
 		data.fd2 = open(av[4], O_CREAT | O_RDWR | O_TRUNC, 0777);
-		if (data.fd1 < 0 || data.fd2 < 0)
+		if (data.fd2 < 0)
 			ft_error(&data, "Wrong file descriptor");
 		exitval = ft_pipex(&data, envp);
 		ft_free_data(&data);
